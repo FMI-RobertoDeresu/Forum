@@ -1,0 +1,1 @@
+﻿<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="_PageBase.aspx.cs" Inherits="Forum.Web.Pages.PageBase" %>

@@ -1,0 +1,132 @@
+﻿<%@ Master Language="C#" AutoEventWireup="true" CodeBehind="Site.master.cs" Inherits="Forum.Web.SiteMaster" %>
+
+<%@ Import Namespace="System.Web.Optimization" %>
+<%@ Import Namespace="System.Collections.Generic" %>
+
+<!DOCTYPE html>
+<html>
+<head runat="server">
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title><%: Page.Title %></title>
+    <link rel="icon" href="~/Content/images/favicon.ico">
+    <asp:ContentPlaceHolder ID="ContentPlaceHolder" runat="server">
+        <%:Styles.Render("~/css") %>
+        <%:Scripts.Render("~/js") %>
+    </asp:ContentPlaceHolder>
+</head>
+<body>
+    <form runat="server">
+        <% if (HttpContext.Current.IsDebuggingEnabled)
+            {
+                Response.Write(@"
+                <div style='color: red; display: block; position: fixed; top: 10px; left: 30px; z-index: 100;'>
+                    <h5 class='visible-xs-block' style='font-weight: bold;'>XS</h5>
+                    <h5 class='visible-sm-block' style='font-weight: bold;'>SM</h5>
+                    <h5 class='visible-md-block' style='font-weight: bold;'>MD</h5>
+                    <h5 class='visible-lg-block' style='font-weight: bold;'>LG</h5>
+                </div>");
+            }
+        %>
+
+        <nav class="navbar">
+            <div class="by">
+                <!-- #region navigation -->
+                <ul class="nav navbar-nav">
+                    <li class="nav-item"><%--hidden-md hidden-lg--%>
+                        <a class="btn btn-transparent-white" href='<%# GetRouteUrl("Default", null) %>'>
+                            <i class="fa fa-home" aria-hidden="true"></i>
+                        </a>
+                    </li>
+                    <li class="nav-item hidden-xs hidden-sm">
+                        <ol class="breadcrumb hidden-xs hidden-sm">
+                            <% if (Session["Navigation"] != null)
+                                {
+                                    foreach (var item in Session["Navigation"] as List<Tuple<string, string>>)
+                                        Response.Write(string.Format("<li><a href='{0}'>{1}</a></li>", item.Item1, item.Item2));
+                                }
+                            %>
+                        </ol>
+                    </li>
+                </ul>
+                <!-- #endregion -->
+
+                <!-- #region actions -->
+                <ul class="nav navbar-nav pull-right">
+                    <li>
+                        <div runat="server" visible="<%# SecurityContext.IsAuthenticated %>">
+                            <button class="btn dropdown-toggle profile" data-toggle="dropdown">
+                                <img id="headerProfileImage" runat="server" src='<%# JpegToBase64(SecurityContext.User?.ProfileImage32Url) %>' alt="" class="profile" />
+                            </button>
+                            <ul class="dropdown-menu left-menu">
+                                <li>
+                                    <asp:HyperLink ID="profileButton" runat="server" NavigateUrl='<%# GetRouteUrl("Profile", new { userId = SecurityContext.User?.Id }) %>'>
+                                        <%# SecurityContext.User?.UserName %>
+                                    </asp:HyperLink>
+                                </li>
+                                <li role="separator" class="divider"></li>
+                                <li>
+                                    <asp:HyperLink ID="signOutButton" runat="server" NavigateUrl='<%# GetRouteUrl("Auth", new { action = "signout" }) %>'>
+                                            Deconectare
+                                    </asp:HyperLink>
+                                </li>
+                            </ul>
+                        </div>
+                        <div runat="server" visible="<%# !SecurityContext.IsAuthenticated %>">
+                            <asp:HyperLink ID="signInButton" runat="server" NavigateUrl='<%# GetRouteUrl("Auth", new { action = "signin" }) %>'
+                                CssClass="btn btn-sm btn-default">
+                                    Conectare
+                            </asp:HyperLink>
+                            <asp:HyperLink ID="registerButton" runat="server" NavigateUrl='<%# GetRouteUrl("Auth", new { action = "register" }) %>'
+                                CssClass="btn btn-sm btn-default">
+                                    Inregistreaza-te
+                            </asp:HyperLink>
+                        </div>
+                    </li>
+                    <li>
+                        <div runat="server" visible='<%# SecurityContext.IsAdmin %>'>
+                            &nbsp;
+                                <button class="btn btn-transparent-white dropdown-toggle" data-toggle="dropdown">
+                                    <i class="fa fa-cog" aria-hidden="true"></i>
+                                </button>
+                            <ul class="dropdown-menu left-menu">
+                                <li>
+                                    <asp:HyperLink ID="manageUsersButton" runat="server" NavigateUrl='<%# GetRouteUrl("ManageUsers", null) %>'>
+                                            <i class="fa fa-users" aria-hidden="true"></i> Utilizatori
+                                    </asp:HyperLink>
+                                </li>
+                            </ul>
+                        </div>
+                    </li>
+                </ul>
+                <!-- #endregion -->
+
+                <!-- #region search box -->
+                <div class="search-wrapper pull-right">
+                    <div class="input-group">
+                        <asp:TextBox ID="searchInput" runat="server" CssClass="form-control input-sm" onEnterTriggerClick="#searchButton" placeholder="Cauta.."></asp:TextBox>
+                        <div class="input-group-btn">
+                            <asp:LinkButton ID="searchButton" runat="server" ClientIDMode="Static" OnClick="searchButton_Click"
+                                OnClientClick="javascript:__doPostBack('ctl00$searchButton','')" CssClass="btn btn-sm btn-default">
+                                <i class="fa fa-search" aria-hidden="true"></i>
+                            </asp:LinkButton>
+                        </div>
+                    </div>
+                </div>
+                <!-- #endregion -->
+            </div>
+        </nav>
+
+        <div class="container-fluid by body-content">
+            <asp:ContentPlaceHolder ID="MainContent" runat="server"></asp:ContentPlaceHolder>
+        </div>
+
+        <footer class="white">
+            <div class="by">
+                <hr />
+                <p class="text-center">&copy; 2017 Roberto Deresu</p>
+            </div>
+        </footer>
+    </form>
+</body>
+</html>
