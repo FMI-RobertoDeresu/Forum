@@ -1,14 +1,12 @@
-﻿using Autofac.Integration.Web.Forms;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web.UI.WebControls;
+using Autofac.Integration.Web.Forms;
 using Forum.Domain.Exceptions;
 using Forum.Domain.Models;
 using Forum.Service.Contracts.Entity;
 using Forum.Web.Helpers;
-using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Linq;
-using System.Web.UI;
-using System.Web.UI.WebControls;
 
 namespace Forum.Web.Pages
 {
@@ -19,7 +17,7 @@ namespace Forum.Web.Pages
 
         public ISubjectService SubjectService { get; set; }
 
-        public int PageSize { get { return 7; } }
+        protected int PageSize => 3;
 
         protected void Page_Load(object sender, EventArgs e)
         {
@@ -29,7 +27,7 @@ namespace Forum.Web.Pages
                 navigation.Add(Tuple.Create(GetRouteUrl("Default", null), "Acasa"));
                 Session["Navigation"] = navigation;
 
-                this.categoryIdHiddenField.Value = (string)RouteData.Values["categoryId"];
+                categoryIdHiddenField.Value = (string) RouteData.Values["categoryId"];
 
                 DataBind();
             }
@@ -40,7 +38,7 @@ namespace Forum.Web.Pages
         {
             if (e.Item.ItemType == ListViewItemType.DataItem)
             {
-                var categoryId = CustomConvert.ToInt32(this.categoriesListView.DataKeys[e.Item.DataItemIndex].Value);
+                var categoryId = CustomConvert.ToInt32(categoriesListView.DataKeys[e.Item.DataItemIndex].Value);
                 var subjectsGrid = e.Item.FindControl("subjectsGridView") as GridView;
 
                 if (subjectsGrid != null)
@@ -67,26 +65,25 @@ namespace Forum.Web.Pages
             catch (Exception exception)
             {
                 //handle exception
-                this.message.InnerText = GenericErrorMessage;
-                this.message.Visible = true;
+                message.InnerText = GenericErrorMessage;
+                message.Visible = true;
             }
         }
 
         protected void categoriesListView_ItemEditing(object sender, ListViewEditEventArgs e)
         {
-            this.categoriesListView.EditIndex = e.NewEditIndex;
-            this.categoriesListView.DataSource = GetCategories();
-            this.categoriesListView.DataBind();
+            categoriesListView.EditIndex = e.NewEditIndex;
+            categoriesListView.DataSource = GetCategories();
+            categoriesListView.DataBind();
         }
 
         protected void categoriesListView_ItemUpdating(object sender, ListViewUpdateEventArgs e)
         {
-            var categoryIdHiddenField = this.categoriesListView.EditItem.FindControl("id") as HiddenField;
-            var categoryNameTextBox = this.categoriesListView.EditItem.FindControl("name") as TextBox;
+            var categoryIdHiddenField = categoriesListView.EditItem.FindControl("id") as HiddenField;
+            var categoryNameTextBox = categoriesListView.EditItem.FindControl("name") as TextBox;
             var category = CategoryService.Get(CustomConvert.ToInt32(categoryIdHiddenField.Value));
 
             if (category != null)
-            {
                 try
                 {
                     category.Edit(categoryNameTextBox.Text);
@@ -97,10 +94,9 @@ namespace Forum.Web.Pages
                 catch
                 {
                     //handle exception
-                    this.message.InnerText = GenericErrorMessage;
-                    this.message.Visible = true;
+                    message.InnerText = GenericErrorMessage;
+                    message.Visible = true;
                 }
-            }
         }
 
         protected void categoriesListView_ItemCanceling(object sender, ListViewCancelEventArgs e)
@@ -110,7 +106,7 @@ namespace Forum.Web.Pages
 
         protected void categoriesListView_ItemDeleting(object sender, ListViewDeleteEventArgs e)
         {
-            var categoryIdHiddenField = this.categoriesListView.Items[e.ItemIndex].FindControl("id") as HiddenField;
+            var categoryIdHiddenField = categoriesListView.Items[e.ItemIndex].FindControl("id") as HiddenField;
             var categoryId = CustomConvert.ToInt32(categoryIdHiddenField.Value);
 
             try
@@ -124,8 +120,8 @@ namespace Forum.Web.Pages
             catch
             {
                 //handle exception
-                this.message.InnerText = GenericErrorMessage;
-                this.message.Visible = true;
+                message.InnerText = GenericErrorMessage;
+                message.Visible = true;
             }
         }
 
@@ -144,9 +140,9 @@ namespace Forum.Web.Pages
 
         protected void subjectsGridView_PageIndexChanging(object sender, GridViewPageEventArgs e)
         {
-            var subjectsGridView = (sender as GridView);
-            var categoryIndex = this.categoriesListView.Items.IndexOf(subjectsGridView.Parent as ListViewDataItem);
-            var categoryId = CustomConvert.ToInt32(this.categoriesListView.DataKeys[categoryIndex].Value);
+            var subjectsGridView = sender as GridView;
+            var categoryIndex = categoriesListView.Items.IndexOf(subjectsGridView.Parent as ListViewDataItem);
+            var categoryId = CustomConvert.ToInt32(categoriesListView.DataKeys[categoryIndex].Value);
 
             try
             {
@@ -179,6 +175,9 @@ namespace Forum.Web.Pages
 
         protected void subjectsGridView_RowCommand(object sender, GridViewCommandEventArgs e)
         {
+            if (e.CommandName.ToLower().Equals("page"))
+                return;
+
             if (!SecurityContext.IsAdmin)
                 throw new NotAuthorizedException();
 
@@ -233,7 +232,6 @@ namespace Forum.Web.Pages
             var subject = SubjectService.Get(CustomConvert.ToInt32(subjectsGridView.DataKeys[e.RowIndex].Value));
 
             if (subject != null)
-            {
                 try
                 {
                     subject.Edit(subjectNameTextBox.Text);
@@ -244,10 +242,9 @@ namespace Forum.Web.Pages
                 catch
                 {
                     //handle exception
-                    this.message.InnerText = GenericErrorMessage;
-                    this.message.Visible = true;
+                    message.InnerText = GenericErrorMessage;
+                    message.Visible = true;
                 }
-            }
         }
 
         protected void subjectsGridView_RowCanceling(object sender, GridViewCancelEditEventArgs e)
@@ -284,8 +281,8 @@ namespace Forum.Web.Pages
             catch
             {
                 //handle exception
-                this.message.InnerText = GenericErrorMessage;
-                this.message.Visible = true;
+                message.InnerText = GenericErrorMessage;
+                message.Visible = true;
             }
         }
 
@@ -296,9 +293,9 @@ namespace Forum.Web.Pages
             {
                 IEnumerable<Category> result;
 
-                if (!string.IsNullOrEmpty(this.categoryIdHiddenField.Value))
+                if (!string.IsNullOrEmpty(categoryIdHiddenField.Value))
                 {
-                    var categoryId = int.Parse(this.categoryIdHiddenField.Value);
+                    var categoryId = int.Parse(categoryIdHiddenField.Value);
                     result = CategoryService.GetMany(x => x.Id == categoryId, x => x.CreatedBy);
                 }
                 else
@@ -306,14 +303,16 @@ namespace Forum.Web.Pages
                     result = CategoryService.GetAll(x => x.CreatedBy);
                 }
 
-                return result.Select(category => (object)new
-                {
-                    Id = category.Id,
-                    Name = category.Name,
-                    CreatedAt = category.CreatedAt,
-                    CreatedById = category.CreatedBy?.Id,
-                    CreatedByName = category.CreatedBy?.FullName,
-                }).ToList();
+                return result
+                    .OrderByDescending(x => x.CreatedAt)
+                    .Select(category => (object) new
+                    {
+                        Id = category.Id,
+                        Name = category.Name,
+                        CreatedAt = category.CreatedAt,
+                        CreatedById = category.CreatedBy?.Id,
+                        CreatedByName = category.CreatedBy?.FullName
+                    }).ToList();
             }
             catch (Exception exception)
             {
@@ -330,8 +329,11 @@ namespace Forum.Web.Pages
                 x => x.Subjects.Select(y => y.Topics.Select(p => p.Posts.Select(t => t.CreatedBy))));
 
             subjectsGridView.VirtualItemCount = category.Subjects?.Count ?? 0;
-            subjectsGridView.DataSource = category.Subjects?.Skip(pageIndex * pageSize).Take(pageSize)
-                .Select(subject => (object)new
+            subjectsGridView.DataSource = category.Subjects?
+                .OrderByDescending(x => x.CreatedAt)
+                .Skip(pageIndex * pageSize)
+                .Take(pageSize)
+                .Select(subject => (object) new
                 {
                     Id = subject.Id,
                     Name = subject.Name,
@@ -340,11 +342,18 @@ namespace Forum.Web.Pages
                     CreatedByName = subject.CreatedBy?.FullName,
                     NumberOfTopics = subject.Topics?.Count,
                     NumberOfPosts = subject.Topics?.SelectMany(x => x.Posts).Count(),
-                    LastPostCreatedById = subject.Topics?.SelectMany(x => x.Posts).OrderBy(x => x.CreatedAt).LastOrDefault()?.CreatedBy?.Id,
-                    LastPostCreatedByName = subject.Topics?.SelectMany(x => x.Posts).OrderBy(x => x.CreatedAt).LastOrDefault()?.CreatedBy?.FullName,
-                    LastPostCreatedAt = subject.Topics?.SelectMany(x => x.Posts).OrderBy(x => x.CreatedAt).LastOrDefault()?.CreatedAt.ToString(),
-                    LastPostCreatedAtSortFormat = subject.Topics?.SelectMany(x => x.Posts).OrderBy(x => x.CreatedAt).LastOrDefault()?.CreatedAt.ToString("yyyy.MM.dd hh:mm:ss"),
-                }).ToList();
+                    LastPostCreatedById =
+                    subject.Topics?.SelectMany(x => x.Posts).OrderBy(x => x.CreatedAt).LastOrDefault()?.CreatedBy?.Id,
+                    LastPostCreatedByName =
+                    subject.Topics?.SelectMany(x => x.Posts).OrderBy(x => x.CreatedAt).LastOrDefault()?.CreatedBy?.FullName,
+                    LastPostCreatedAt =
+                    subject.Topics?.SelectMany(x => x.Posts).OrderBy(x => x.CreatedAt).LastOrDefault()?.CreatedAt.ToString(),
+                    LastPostCreatedAtSortFormat =
+                    subject.Topics?.SelectMany(x => x.Posts)
+                        .OrderBy(x => x.CreatedAt)
+                        .LastOrDefault()?.CreatedAt.ToString("yyyy.MM.dd hh:mm:ss")
+                })
+                .ToList();
             subjectsGridView.DataBind();
         }
     }

@@ -32,8 +32,8 @@ namespace Forum.Framework
 
                 userRepository = containerProvider.RequestLifetime.Resolve<IUserRepository>();
 
-                var tiket = (httpApplication.User.Identity as FormsIdentity).Ticket;
-                var user = userRepository.Get(int.Parse(tiket.UserData));
+                var ticket = ((FormsIdentity) httpApplication.User.Identity).Ticket;
+                var user = userRepository.Get(int.Parse(ticket.UserData));
 
                 securityContext = new SecurityContext(user);
             }
