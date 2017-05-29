@@ -6,10 +6,15 @@
 <!DOCTYPE html>
 <html>
 <head runat="server">
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta charset="utf-8"/>
+    <meta name="keywords" content="forum,educational">
+    <meta name="description" content="Educational forum with categories, subjects, topics and posts.">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta name="robots" content="noarchive">
+
     <title><%: Page.Title %></title>
     <link rel="icon" href="~/Content/images/favicon.ico">
+
     <asp:ContentPlaceHolder ID="ContentPlaceHolder" runat="server">
         <%:Styles.Render("~/css") %>
         <%:Scripts.Render("~/js") %>

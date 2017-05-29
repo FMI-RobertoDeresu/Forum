@@ -1,11 +1,12 @@
-﻿using Autofac;
+﻿using System;
+using System.Configuration;
+using System.Web;
+using System.Web.Security;
+using Autofac;
 using Autofac.Integration.Web;
 using Forum.Domain.Contracts;
 using Forum.Domain.Exceptions;
 using Forum.Framework.Repositorires;
-using System;
-using System.Web;
-using System.Web.Security;
 
 namespace Forum.Framework
 {
@@ -13,13 +14,29 @@ namespace Forum.Framework
     {
         public void Init(HttpApplication httpApplication)
         {
-            httpApplication.PostAuthenticateRequest += new EventHandler(OnPostAuthenticateRequest);
-            httpApplication.Error += new EventHandler(OnError);
+            httpApplication.BeginRequest += OnBeginRequest;
+            httpApplication.PostAuthenticateRequest += OnPostAuthenticateRequest;
+            httpApplication.Error += OnError;
+        }
+
+        public void Dispose() { }
+
+        private void OnBeginRequest(object sender, EventArgs e)
+        {
+            var httpApplication = (HttpApplication) sender;
+            var url = httpApplication.Context.Request.Url;
+            var requireHttps = bool.Parse(ConfigurationManager.AppSettings["requireHttps"]);
+
+            if (url.Scheme == "http" && requireHttps)
+            {
+                httpApplication.Context.Response.RedirectPermanent(url.ToString().Replace("http", "https"));
+                httpApplication.Context.ApplicationInstance.CompleteRequest();
+            }
         }
 
         private void OnPostAuthenticateRequest(object sender, EventArgs e)
         {
-            var httpApplication = (HttpApplication)sender;
+            var httpApplication = (HttpApplication) sender;
 
             IApplicationContext applicationContext;
             ISecurityContext securityContext;
@@ -27,7 +44,7 @@ namespace Forum.Framework
 
             if (httpApplication.Request.IsAuthenticated)
             {
-                var containerProviderAccessor = (IContainerProviderAccessor)httpApplication;
+                var containerProviderAccessor = (IContainerProviderAccessor) httpApplication;
                 var containerProvider = containerProviderAccessor.ContainerProvider;
 
                 userRepository = containerProvider.RequestLifetime.Resolve<IUserRepository>();
@@ -50,7 +67,7 @@ namespace Forum.Framework
 
         private void OnError(object sender, EventArgs e)
         {
-            var httpApplication = (HttpApplication)sender;
+            var httpApplication = (HttpApplication) sender;
 
             //handle exception
             if (httpApplication.Server.GetLastError().InnerException?.GetType() == typeof(NotAuthorizedException))
@@ -64,7 +81,5 @@ namespace Forum.Framework
                 httpApplication.Response.RedirectToRoute("Error", null);
             }
         }
-
-        public void Dispose() { }
     }
 }
