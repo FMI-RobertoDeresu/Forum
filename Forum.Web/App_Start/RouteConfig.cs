@@ -11,10 +11,10 @@ namespace Forum.Web
             routes.MapPageRoute("Category", "{categoryId}", "~/Pages/Categories.aspx", false, null,
                 new RouteValueDictionary { { "categoryId", "[0-9]+" } });
 
-            routes.MapPageRoute("TopicIndex", "subject/{subjectId}/topics", "~/Pages/Topics.aspx", false, null,
+            routes.MapPageRoute("SubjectTopics", "subject/{subjectId}/topics", "~/Pages/Topics.aspx", false, null,
                 new RouteValueDictionary { { "subjectId", "[0-9]+" } });
 
-            routes.MapPageRoute("PostIndex", "topic/{topicId}/posts", "~/Pages/Posts.aspx", false, null,
+            routes.MapPageRoute("TopicPosts", "topic/{topicId}/posts", "~/Pages/Posts.aspx", false, null,
                 new RouteValueDictionary { { "topicId", "[0-9]+" } });
 
             routes.MapPageRoute("Auth", "authenticate/{action}/{userName}", "~/Pages/Auth.aspx", false,

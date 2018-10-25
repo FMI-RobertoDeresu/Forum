@@ -30,8 +30,8 @@ namespace Forum.Web.Pages
                 else
                 {
                     navigation.Add(Tuple.Create(GetRouteUrl("Default", null), "Acasa"));
-                    navigation.Add(Tuple.Create(GetRouteUrl("TopicIndex", new { subjectId = topic.Subject.Id }), topic.Subject.Name));
-                    navigation.Add(Tuple.Create(GetRouteUrl("PostIndex", new { topicId = topic.Id }), topic.Name));
+                    navigation.Add(Tuple.Create(GetRouteUrl("SubjectTopics", new { subjectId = topic.Subject.Id }), topic.Subject.Name));
+                    navigation.Add(Tuple.Create(GetRouteUrl("TopicPosts", new { topicId = topic.Id }), topic.Name));
                     Session["Navigation"] = navigation;
 
                     this.topicId.Value = topicId.ToString();
@@ -68,7 +68,7 @@ namespace Forum.Web.Pages
 
                 PostService.Create(post);
                 PostService.CommitChanges();
-                Response.RedirectToRoute("PostIndex", new { topicId = topic.Id });
+                Response.RedirectToRoute("TopicPosts", new { topicId = topic.Id });
             }
             catch
             {
@@ -99,7 +99,7 @@ namespace Forum.Web.Pages
                 post.Edit(postTextBox.Text);
                 PostService.Update(post);
                 PostService.CommitChanges();
-                Response.RedirectToRoute("PostIndex", new { topicId = this.topicId.Value });
+                Response.RedirectToRoute("TopicPosts", new { topicId = this.topicId.Value });
             }
             catch
             {
@@ -111,7 +111,7 @@ namespace Forum.Web.Pages
 
         protected void postsView_ItemCanceling(object sender, ListViewCancelEventArgs e)
         {
-            Response.RedirectToRoute("PostIndex", new { topicId = this.topicId.Value });
+            Response.RedirectToRoute("TopicPosts", new { topicId = this.topicId.Value });
         }
 
         protected void postsView_ItemDeleting(object sender, ListViewDeleteEventArgs e)
@@ -127,7 +127,7 @@ namespace Forum.Web.Pages
             {
                 PostService.Delete(post);
                 PostService.CommitChanges();
-                Response.RedirectToRoute("PostIndex", new { topicId = this.topicId.Value });
+                Response.RedirectToRoute("TopicPosts", new { topicId = this.topicId.Value });
             }
             catch
             {

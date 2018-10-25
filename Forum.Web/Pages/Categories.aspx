@@ -74,7 +74,7 @@
                                 <asp:BoundField DataField="Id" ReadOnly="true" Visible="false" />
                                 <asp:TemplateField SortExpression="Name" HeaderText="Subiect" HeaderStyle-CssClass="col-xs-6 col-sm-5">
                                     <ItemTemplate>
-                                        <asp:HyperLink ID="subject" NavigateUrl='<%# string.Format("/Subject/{0}/Topics", Eval("Id")) %>' runat="server" CssClass="underline-fix">
+                                        <asp:HyperLink ID="subject" NavigateUrl='<%# GetRouteUrl("SubjectTopics", new { subjectId = Eval("Id") }) %>' runat="server" CssClass="underline-fix">
                                             <h4 style="display:inline"><%#Eval("Name") %></h4>
                                         </asp:HyperLink>
                                         <span>de <a href='<%# GetRouteUrl("Profile", new { userId = Eval("CreatedById") }) %>'><%# Eval("CreatedByName") %></a>

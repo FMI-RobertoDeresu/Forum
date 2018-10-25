@@ -61,7 +61,7 @@
                     <li>
                         <div runat="server" visible="<%# SecurityContext.IsAuthenticated %>">
                             <button class="btn dropdown-toggle profile" data-toggle="dropdown">
-                                <img id="headerProfileImage" runat="server" src='<%# JpegToBase64(SecurityContext.User?.ProfileImage32Url) %>' alt="" class="profile" />
+                                <img id="headerProfileImage" runat="server" src='<%# JpegToBase64(SecurityContext.User?.ProfileImage64Url) %>' alt="" class="profile" />
                             </button>
                             <ul class="dropdown-menu left-menu">
                                 <li>

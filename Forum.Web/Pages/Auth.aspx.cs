@@ -76,7 +76,7 @@ namespace Forum.Web.Pages
 
                             if (!File.Exists(user.ProfileImage64Url) || !File.Exists(user.ProfileImage64Url) || !File.Exists(user.ProfileImage128Url))
                             {
-                                UserService.SetProfilePicture(user, Image.FromFile(Server.MapPath("/Content/images/default_profile.jpg")));
+                                UserService.SetProfilePicture(user, Image.FromFile(Server.MapPath("~/Content/images/default_profile.jpg")));
                                 UserService.CommitChanges();
                             }
 
@@ -131,7 +131,7 @@ namespace Forum.Web.Pages
                         var user = new User(this.username.Text, password);
 
                         UserService.Create(user);
-                        UserService.SetProfilePicture(user, Image.FromFile(Server.MapPath("/Content/images/default_profile.jpg")));
+                        UserService.SetProfilePicture(user, Image.FromFile(Server.MapPath("~/Content/images/default_profile.jpg")));
                         UserService.CommitChanges();
                         Response.RedirectToRoute("Auth", new { action = "signin", userName = user.UserName });
                     }

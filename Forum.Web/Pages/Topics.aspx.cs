@@ -30,7 +30,7 @@ namespace Forum.Web.Pages
                 else
                 {
                     navigation.Add(Tuple.Create(GetRouteUrl("Default", null), "Acasa"));
-                    navigation.Add(Tuple.Create(GetRouteUrl("TopicIndex", new { subjectId = subjectId }), subject.Name));
+                    navigation.Add(Tuple.Create(GetRouteUrl("SubjectTopics", new { subjectId = subjectId }), subject.Name));
                     Session["Navigation"] = navigation;
 
                     this.subjectId.Value = subject.Id.ToString();
@@ -84,7 +84,7 @@ namespace Forum.Web.Pages
 
                 TopicService.Create(topic);
                 TopicService.CommitChanges();
-                Response.RedirectToRoute("TopicIndex", new { subjectId = this.subjectId.Value });
+                Response.RedirectToRoute("SubjectTopics", new { subjectId = this.subjectId.Value });
             }
             catch
             {
@@ -124,7 +124,7 @@ namespace Forum.Web.Pages
 
                 TopicService.Update(topic);
                 TopicService.CommitChanges();
-                Response.RedirectToRoute("TopicIndex", new { subjectId = this.subjectId.Value });
+                Response.RedirectToRoute("SubjectTopics", new { subjectId = this.subjectId.Value });
             }
             catch
             {
@@ -136,7 +136,7 @@ namespace Forum.Web.Pages
 
         protected void topicsListView_ItemCanceling(object sender, ListViewCancelEventArgs e)
         {
-            Response.RedirectToRoute("TopicIndex", new { subjectId = this.subjectId.Value });
+            Response.RedirectToRoute("SubjectTopics", new { subjectId = this.subjectId.Value });
         }
 
         protected void topicsListView_ItemDeleting(object sender, ListViewDeleteEventArgs e)
@@ -152,7 +152,7 @@ namespace Forum.Web.Pages
             {
                 TopicService.Delete(topic);
                 TopicService.CommitChanges();
-                Response.RedirectToRoute("TopicIndex", new { subjectId = this.subjectId.Value });
+                Response.RedirectToRoute("SubjectTopics", new { subjectId = this.subjectId.Value });
             }
             catch
             {
@@ -175,7 +175,7 @@ namespace Forum.Web.Pages
                         CreatedBy = x.CreatedBy,
                         Name = x.Name,
                         NumberOfPosts = x.Posts.Count,
-                        PostsUrl = GetRouteUrl("PostIndex", new { topicId = x.Id }),
+                        PostsUrl = GetRouteUrl("TopicPosts", new { topicId = x.Id }),
                         CanEdit = SecurityContext.IsAuthenticated && (x.CreatedBy == SecurityContext.User || SecurityContext.IsManager),
                         CanDelete = SecurityContext.IsManager || SecurityContext.IsAdmin
                     }).ToList();

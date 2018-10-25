@@ -43,7 +43,7 @@ namespace Forum.Web.Pages
                     {
                         DsiplayName = "#Subiect " + x.Name,
                         IsHyperlinkResult = true,
-                        NavigateUrl = GetRouteUrl("TopicIndex", new { subjectId = x.Id }),
+                        NavigateUrl = GetRouteUrl("SubjectTopics", new { subjectId = x.Id }),
                         IsContentResult = false,
                         ContentResult = string.Empty
                     })).Union(TopicService.GetAll()
@@ -53,7 +53,7 @@ namespace Forum.Web.Pages
                     {
                         DsiplayName = "#Topic " + x.Name,
                         IsHyperlinkResult = true,
-                        NavigateUrl = GetRouteUrl("PostIndex", new { topicId = x.Id }),
+                        NavigateUrl = GetRouteUrl("TopicPosts", new { topicId = x.Id }),
                         IsContentResult = false,
                         ContentResult = string.Empty
                     })).Union(PostService.GetAll()
@@ -63,7 +63,7 @@ namespace Forum.Web.Pages
                     {
                         DsiplayName = "#Postare",
                         IsHyperlinkResult = true,
-                        NavigateUrl = GetRouteUrl("PostIndex", new { topicId = x.Topic.Id }),
+                        NavigateUrl = GetRouteUrl("TopicPosts", new { topicId = x.Topic.Id }),
                         IsContentResult = true,
                         ContentResult = x.Text
                     }));
